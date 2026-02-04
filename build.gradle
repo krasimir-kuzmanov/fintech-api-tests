@@ -1,0 +1,45 @@
+plugins {
+  id 'java'
+}
+
+group = 'com.example.fintech'
+version = '1.0.0'
+description = 'fintech-api-tests'
+
+java {
+  toolchain {
+    languageVersion = JavaLanguageVersion.of(21)
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  // JUnit 5
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+
+  // RestAssured
+  testImplementation 'io.rest-assured:rest-assured:5.4.0'
+  testImplementation 'io.rest-assured:json-path:5.4.0'
+  testImplementation 'io.rest-assured:xml-path:5.4.0'
+
+  // JSON serialization
+  testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.17.0'
+
+  // Assertions
+  testImplementation 'org.assertj:assertj-core:3.27.7'
+
+  // Logging (nice for debugging failures)
+  testImplementation 'org.slf4j:slf4j-simple:2.0.13'
+}
+
+tasks.named('test') {
+  useJUnitPlatform()
+
+  testLogging {
+    events "passed", "skipped", "failed"
+    exceptionFormat "full"
+  }
+}
