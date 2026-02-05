@@ -18,12 +18,6 @@ Run a single test class:
 ```bash
 ./gradlew test --tests "com.example.fintech.SomeTest"
 ```
-
-## Project Layout
-- `src/test/java` — test sources
-- `src/test/resources` — test data and fixtures
-- `build.gradle` — dependencies and test config
-
 ## Notes
 - Test logging is configured to show passed/skipped/failed with full stack traces.
 - The Gradle wrapper is pinned to version 9.0.0.
