@@ -3,6 +3,7 @@ package com.example.fintech.api.tests;
 import com.example.fintech.api.model.CreateTestUserRequest;
 import com.example.fintech.api.model.RegisterRequest;
 import io.restassured.http.ContentType;
+import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -22,7 +23,7 @@ class RegisterTests extends BaseTest {
         .when()
         .post("/auth/register")
         .then()
-        .statusCode(200)
+        .statusCode(HttpStatus.SC_OK)
         .body("username", equalTo("john_doe"))
         .body("id", notNullValue());
   }
@@ -38,7 +39,7 @@ class RegisterTests extends BaseTest {
         .when()
         .post("/test/users")
         .then()
-        .statusCode(200);
+        .statusCode(HttpStatus.SC_OK);
 
     given()
         .contentType(ContentType.JSON)
@@ -46,7 +47,7 @@ class RegisterTests extends BaseTest {
         .when()
         .post("/auth/register")
         .then()
-        .statusCode(400)
+        .statusCode(HttpStatus.SC_BAD_REQUEST)
         .body("error", equalTo("USER_ALREADY_EXISTS"));
   }
 }
