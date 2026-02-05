@@ -4,6 +4,7 @@ import static io.restassured.RestAssured.given;
 
 import com.example.fintech.api.model.CreateTestUserRequest;
 import io.restassured.http.ContentType;
+import org.apache.http.HttpStatus;
 
 public class TestClient {
 
@@ -15,7 +16,7 @@ public class TestClient {
         .when()
         .post(RESET_ENDPOINT)
         .then()
-        .statusCode(200);
+        .statusCode(HttpStatus.SC_OK);
   }
 
   public void createTestUser(String username, String password, boolean overwrite) {
@@ -28,6 +29,6 @@ public class TestClient {
         .when()
         .post(TEST_USERS_ENDPOINT)
         .then()
-        .statusCode(200);
+        .statusCode(HttpStatus.SC_OK);
   }
 }
