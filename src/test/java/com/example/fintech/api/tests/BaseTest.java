@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 public abstract class BaseTest {
 
-  private final TestClient testClient = new TestClient();
+  protected final TestClient testClient = new TestClient();
 
   @BeforeAll
   static void setup() {

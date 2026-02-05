@@ -1,6 +1,5 @@
 package com.example.fintech.api.tests;
 
-import com.example.fintech.api.model.CreateTestUserRequest;
 import com.example.fintech.api.model.RegisterRequest;
 import io.restassured.http.ContentType;
 import org.apache.http.HttpStatus;
@@ -33,13 +32,7 @@ class RegisterTests extends BaseTest {
     RegisterRequest request =
         new RegisterRequest("john", "password");
 
-    given()
-        .contentType(ContentType.JSON)
-        .body(new CreateTestUserRequest("john", "password", true))
-        .when()
-        .post("/test/users")
-        .then()
-        .statusCode(HttpStatus.SC_OK);
+    testClient.createTestUser("john", "password", true);
 
     given()
         .contentType(ContentType.JSON)
