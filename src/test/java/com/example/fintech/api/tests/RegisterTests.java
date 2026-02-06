@@ -1,46 +1,41 @@
 package com.example.fintech.api.tests;
 
+import com.example.fintech.api.client.AuthClient;
 import com.example.fintech.api.model.RegisterRequest;
-import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
-import static io.restassured.RestAssured.given;
+import static com.example.fintech.api.tests.TestConstants.ERROR_CODE_USER_ALREADY_EXISTS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 class RegisterTests extends BaseTest {
 
+  private final AuthClient authClient = new AuthClient();
+
   @Test
   void should_RegisterUser_When_RequestIsValid() {
-    RegisterRequest request =
-        new RegisterRequest("john_doe", "password123");
+    Response response = authClient.register(
+        new RegisterRequest("john", "password"));
 
-    given()
-        .contentType(ContentType.JSON)
-        .body(request)
-        .when()
-        .post("/auth/register")
-        .then()
+    response.then()
         .statusCode(HttpStatus.SC_OK)
-        .body("username", equalTo("john_doe"))
+        .body("username", equalTo("john"))
         .body("id", notNullValue());
   }
 
   @Test
   void should_NotAllowDuplicateRegistration_When_UsernameExists() {
-    RegisterRequest request =
-        new RegisterRequest("john", "password");
+    RegisterRequest request = new RegisterRequest("john", "password");
 
-    testClient.createTestUser("john", "password", true);
+    authClient.register(request)
+        .then()
+        .statusCode(HttpStatus.SC_OK);
 
-    given()
-        .contentType(ContentType.JSON)
-        .body(request)
-        .when()
-        .post("/auth/register")
+    authClient.register(request)
         .then()
         .statusCode(HttpStatus.SC_BAD_REQUEST)
-        .body("error", equalTo("USER_ALREADY_EXISTS"));
+        .body("error", equalTo(ERROR_CODE_USER_ALREADY_EXISTS));
   }
 }
