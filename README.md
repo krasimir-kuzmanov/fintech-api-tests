@@ -3,18 +3,16 @@
 API test suite for fintech services using JUnit 5 and RestAssured.
 
 ## Requirements
-- Java 21 (toolchain configured in `build.gradle`; tests compile/run with Java 21)
-- Gradle wrapper is included (`./gradlew`), but it still needs a local JDK to run
-- `JAVA_HOME` must point to a JDK 17+ (21 is fine and recommended)
+- JDK 21 installed (tests compile/run with Java 21; toolchain configured in `build.gradle`)
+- SDKMAN available (project includes `.sdkmanrc`)
+- No local Gradle install required (wrapper included)
 
-If you use SDKMAN, the project includes `.sdkmanrc` for a consistent JDK. Run:
-```bash
-sdk env
-```
+The Gradle wrapper still needs a local JDK to run, so ensure `JAVA_HOME` points to JDK 21 (or at least JDK 17+).
 
 ## Quick Start
 Run the test suite:
 ```bash
+sdk env
 ./gradlew test
 ```
 
