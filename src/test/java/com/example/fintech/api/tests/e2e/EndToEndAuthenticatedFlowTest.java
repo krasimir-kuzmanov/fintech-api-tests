@@ -33,7 +33,7 @@ class EndToEndAuthenticatedFlowTest extends BaseTest {
   private final TransactionClient transactionClient = new TransactionClient();
 
   @Test
-  void shouldCompleteAuthenticatedPaymentFlow() {
+  void shouldCompletePaymentFlow() {
     // given
     testSupportClient.reset();
 
