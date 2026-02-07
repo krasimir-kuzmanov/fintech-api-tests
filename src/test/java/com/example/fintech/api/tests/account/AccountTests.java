@@ -34,7 +34,7 @@ class AccountTests extends BaseTest {
     String token = loginAndGetToken(user.username());
 
     // when
-    Response response = accountClient.fundAuthenticated(accountId, request, token);
+    Response response = accountClient.fund(accountId, request, token);
 
     // then
     BalanceResponse balanceResponse = response
@@ -55,12 +55,12 @@ class AccountTests extends BaseTest {
     FundAccountRequest request = new FundAccountRequest(ACCOUNT_BALANCE_AMOUNT);
     String token = loginAndGetToken(user.username());
 
-    accountClient.fundAuthenticated(accountId, request, token)
+    accountClient.fund(accountId, request, token)
         .then()
         .statusCode(HttpStatus.SC_OK);
 
     // when
-    Response response = accountClient.getBalanceAuthenticated(accountId, token);
+    Response response = accountClient.getBalance(accountId, token);
 
     // then
     BalanceResponse balanceResponse = response
@@ -82,7 +82,7 @@ class AccountTests extends BaseTest {
     String token = loginAndGetToken(user.username());
 
     // when
-    Response response = accountClient.fundAuthenticated(accountId, request, token);
+    Response response = accountClient.fund(accountId, request, token);
 
     // then
     response.then()

@@ -64,19 +64,19 @@ class EndToEndAuthenticatedFlowTest extends BaseTest {
         bob.accountId(),
         E2E_PAYMENT_AMOUNT);
 
-    Response fundingResponse = accountClient.fundAuthenticated(
+    Response fundingResponse = accountClient.fund(
         alice.accountId(),
         fundRequest,
         aliceToken);
 
-    Response paymentResponse = transactionClient.makePaymentAuthenticated(
+    Response paymentResponse = transactionClient.makePayment(
         paymentRequest,
         aliceToken);
 
-    Response aliceBalanceResponse = accountClient.getBalanceAuthenticated(alice.accountId(), aliceToken);
-    Response bobBalanceResponse = accountClient.getBalanceAuthenticated(bob.accountId(), bobToken);
+    Response aliceBalanceResponse = accountClient.getBalance(alice.accountId(), aliceToken);
+    Response bobBalanceResponse = accountClient.getBalance(bob.accountId(), bobToken);
 
-    Response transactionsResponse = transactionClient.getTransactionsAuthenticated(alice.accountId(), aliceToken);
+    Response transactionsResponse = transactionClient.getTransactions(alice.accountId(), aliceToken);
 
     // then
     fundingResponse.then()

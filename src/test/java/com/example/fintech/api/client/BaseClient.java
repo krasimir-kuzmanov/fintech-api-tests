@@ -7,8 +7,8 @@ import static io.restassured.RestAssured.given;
 
 public abstract class BaseClient {
 
-  protected static final String AUTH_HEADER = "Authorization";
-  protected static final String BEARER_PREFIX = "Bearer ";
+  private static final String AUTH_HEADER = "Authorization";
+  private static final String BEARER_PREFIX = "Bearer ";
 
   protected RequestSpecification baseRequest() {
     return given()

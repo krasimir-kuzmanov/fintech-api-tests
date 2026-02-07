@@ -25,6 +25,8 @@ class TransactionTests extends BaseTest {
   private static final BigDecimal TRANSACTION_EXCESSIVE_AMOUNT = new BigDecimal("500.00");
   private static final BigDecimal TRANSACTION_INITIAL_BALANCE = new BigDecimal("100.00");
   private static final BigDecimal TRANSACTION_PAYMENT_AMOUNT = new BigDecimal("25.00");
+  private static final BigDecimal TRANSACTION_FIRST_AMOUNT = new BigDecimal("30.00");
+  private static final BigDecimal TRANSACTION_SECOND_AMOUNT = new BigDecimal("20.00");
 
   private final AccountClient accountClient = new AccountClient();
   private final TransactionClient transactionClient = new TransactionClient();
@@ -41,7 +43,7 @@ class TransactionTests extends BaseTest {
         TRANSACTION_PAYMENT_AMOUNT);
 
     // when
-    TransactionResponse response = transactionClient.makePaymentAuthenticated(request, token)
+    TransactionResponse response = transactionClient.makePayment(request, token)
         .then()
         .statusCode(HttpStatus.SC_OK)
         .extract()
@@ -63,7 +65,7 @@ class TransactionTests extends BaseTest {
         TRANSACTION_EXCESSIVE_AMOUNT);
 
     // when
-    Response response = transactionClient.makePaymentAuthenticated(request, token);
+    Response response = transactionClient.makePayment(request, token);
 
     // then
     response.then()
@@ -80,22 +82,22 @@ class TransactionTests extends BaseTest {
     PaymentRequest firstPayment = new PaymentRequest(
         accounts.fromAccountId(),
         accounts.toAccountId(),
-        new BigDecimal("30.00"));
+        TRANSACTION_FIRST_AMOUNT);
     PaymentRequest secondPayment = new PaymentRequest(
         accounts.fromAccountId(),
         accounts.toAccountId(),
-        new BigDecimal("20.00"));
+        TRANSACTION_SECOND_AMOUNT);
 
-    transactionClient.makePaymentAuthenticated(firstPayment, token)
+    transactionClient.makePayment(firstPayment, token)
         .then()
         .statusCode(HttpStatus.SC_OK);
 
-    transactionClient.makePaymentAuthenticated(secondPayment, token)
+    transactionClient.makePayment(secondPayment, token)
         .then()
         .statusCode(HttpStatus.SC_OK);
 
     // when
-    Response response = transactionClient.getTransactionsAuthenticated(accounts.fromAccountId(), token);
+    Response response = transactionClient.getTransactions(accounts.fromAccountId(), token);
 
     // then
     response.then()
@@ -111,7 +113,7 @@ class TransactionTests extends BaseTest {
   }
 
   private void fundAccount(String accountId, String token) {
-    accountClient.fundAuthenticated(accountId, new FundAccountRequest(TRANSACTION_INITIAL_BALANCE), token)
+    accountClient.fund(accountId, new FundAccountRequest(TRANSACTION_INITIAL_BALANCE), token)
         .then()
         .statusCode(HttpStatus.SC_OK);
   }
