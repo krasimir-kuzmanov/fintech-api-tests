@@ -23,3 +23,4 @@ Run a single test class:
 ## Notes
 - Test logging is configured to show passed/skipped/failed with full stack traces.
 - The Gradle wrapper is pinned to version 9.0.0.
+- Security tests verify unauthenticated (401) and unauthorized (403) access across account and transaction endpoints.

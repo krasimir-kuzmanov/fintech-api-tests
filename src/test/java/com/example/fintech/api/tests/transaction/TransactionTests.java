@@ -2,8 +2,10 @@ package com.example.fintech.api.tests.transaction;
 
 import com.example.fintech.api.client.AccountClient;
 import com.example.fintech.api.client.TransactionClient;
+import com.example.fintech.api.model.request.LoginRequest;
 import com.example.fintech.api.model.request.FundAccountRequest;
 import com.example.fintech.api.model.request.PaymentRequest;
+import com.example.fintech.api.model.response.AuthResponse;
 import com.example.fintech.api.model.response.TransactionResponse;
 import com.example.fintech.api.tests.base.BaseTest;
 import org.apache.http.HttpStatus;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static com.example.fintech.api.testdata.TestConstants.ERROR_CODE_INSUFFICIENT_FUNDS;
+import static com.example.fintech.api.testdata.TestConstants.DEFAULT_PASSWORD;
 import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_STATUS_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -30,14 +33,15 @@ class TransactionTests extends BaseTest {
   void shouldMakePaymentSuccessfully() {
     // given
     AccountPair accounts = registerAccounts();
-    fundAccount(accounts.fromAccountId());
+    String token = loginAndGetToken(accounts.fromUsername());
+    fundAccount(accounts.fromAccountId(), token);
     PaymentRequest request = new PaymentRequest(
         accounts.fromAccountId(),
         accounts.toAccountId(),
         TRANSACTION_PAYMENT_AMOUNT);
 
     // when
-    TransactionResponse response = transactionClient.makePayment(request)
+    TransactionResponse response = transactionClient.makePaymentAuthenticated(request, token)
         .then()
         .statusCode(HttpStatus.SC_OK)
         .extract()
@@ -51,14 +55,15 @@ class TransactionTests extends BaseTest {
   void shouldRejectPaymentWithInsufficientFunds() {
     // given
     AccountPair accounts = registerAccounts();
-    fundAccount(accounts.fromAccountId());
+    String token = loginAndGetToken(accounts.fromUsername());
+    fundAccount(accounts.fromAccountId(), token);
     PaymentRequest request = new PaymentRequest(
         accounts.fromAccountId(),
         accounts.toAccountId(),
         TRANSACTION_EXCESSIVE_AMOUNT);
 
     // when
-    Response response = transactionClient.makePayment(request);
+    Response response = transactionClient.makePaymentAuthenticated(request, token);
 
     // then
     response.then()
@@ -70,7 +75,8 @@ class TransactionTests extends BaseTest {
   void shouldReturnTransactionHistory() {
     // given
     AccountPair accounts = registerAccounts();
-    fundAccount(accounts.fromAccountId());
+    String token = loginAndGetToken(accounts.fromUsername());
+    fundAccount(accounts.fromAccountId(), token);
     PaymentRequest firstPayment = new PaymentRequest(
         accounts.fromAccountId(),
         accounts.toAccountId(),
@@ -80,16 +86,16 @@ class TransactionTests extends BaseTest {
         accounts.toAccountId(),
         new BigDecimal("20.00"));
 
-    transactionClient.makePayment(firstPayment)
+    transactionClient.makePaymentAuthenticated(firstPayment, token)
         .then()
         .statusCode(HttpStatus.SC_OK);
 
-    transactionClient.makePayment(secondPayment)
+    transactionClient.makePaymentAuthenticated(secondPayment, token)
         .then()
         .statusCode(HttpStatus.SC_OK);
 
     // when
-    Response response = transactionClient.getTransactions(accounts.fromAccountId());
+    Response response = transactionClient.getTransactionsAuthenticated(accounts.fromAccountId(), token);
 
     // then
     response.then()
@@ -98,18 +104,28 @@ class TransactionTests extends BaseTest {
   }
 
   private AccountPair registerAccounts() {
-    String fromAccountId = registerAndGetAccountId("payer");
-    String toAccountId = registerAndGetAccountId("receiver");
+    RegisteredUser fromUser = registerUser("payer");
+    RegisteredUser toUser = registerUser("receiver");
 
-    return new AccountPair(fromAccountId, toAccountId);
+    return new AccountPair(fromUser.username(), fromUser.accountId(), toUser.accountId());
   }
 
-  private void fundAccount(String accountId) {
-    accountClient.fund(accountId, new FundAccountRequest(TRANSACTION_INITIAL_BALANCE))
+  private void fundAccount(String accountId, String token) {
+    accountClient.fundAuthenticated(accountId, new FundAccountRequest(TRANSACTION_INITIAL_BALANCE), token)
         .then()
         .statusCode(HttpStatus.SC_OK);
   }
 
-  private record AccountPair(String fromAccountId, String toAccountId) {
+  private String loginAndGetToken(String username) {
+    AuthResponse response = authClient.login(new LoginRequest(username, DEFAULT_PASSWORD))
+        .then()
+        .statusCode(HttpStatus.SC_OK)
+        .extract()
+        .as(AuthResponse.class);
+
+    return response.token();
+  }
+
+  private record AccountPair(String fromUsername, String fromAccountId, String toAccountId) {
   }
 }

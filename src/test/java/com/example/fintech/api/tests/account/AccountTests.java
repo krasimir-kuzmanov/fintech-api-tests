@@ -1,8 +1,10 @@
 package com.example.fintech.api.tests.account;
 
 import com.example.fintech.api.client.AccountClient;
+import com.example.fintech.api.model.request.LoginRequest;
 import com.example.fintech.api.model.request.FundAccountRequest;
 import com.example.fintech.api.model.response.BalanceResponse;
+import com.example.fintech.api.model.response.AuthResponse;
 import com.example.fintech.api.tests.base.BaseTest;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
+import static com.example.fintech.api.testdata.TestConstants.DEFAULT_PASSWORD;
 import static com.example.fintech.api.testdata.TestConstants.ERROR_CODE_INVALID_AMOUNT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -25,11 +28,13 @@ class AccountTests extends BaseTest {
   @Test
   void shouldFundAccountSuccessfully() {
     // given
-    String accountId = registerAndGetAccountId("account_user");
+    RegisteredUser user = registerUser("account_user");
+    String accountId = user.accountId();
     FundAccountRequest request = new FundAccountRequest(ACCOUNT_FUND_AMOUNT);
+    String token = loginAndGetToken(user.username());
 
     // when
-    Response response = accountClient.fund(accountId, request);
+    Response response = accountClient.fundAuthenticated(accountId, request, token);
 
     // then
     BalanceResponse balanceResponse = response
@@ -45,15 +50,17 @@ class AccountTests extends BaseTest {
   @Test
   void shouldReturnBalanceForExistingAccount() {
     // given
-    String accountId = registerAndGetAccountId("account_user");
+    RegisteredUser user = registerUser("account_user");
+    String accountId = user.accountId();
     FundAccountRequest request = new FundAccountRequest(ACCOUNT_BALANCE_AMOUNT);
+    String token = loginAndGetToken(user.username());
 
-    accountClient.fund(accountId, request)
+    accountClient.fundAuthenticated(accountId, request, token)
         .then()
         .statusCode(HttpStatus.SC_OK);
 
     // when
-    Response response = accountClient.getBalance(accountId);
+    Response response = accountClient.getBalanceAuthenticated(accountId, token);
 
     // then
     BalanceResponse balanceResponse = response
@@ -69,11 +76,13 @@ class AccountTests extends BaseTest {
   @Test
   void shouldRejectFundingWithNegativeAmount() {
     // given
-    String accountId = registerAndGetAccountId("account_user");
+    RegisteredUser user = registerUser("account_user");
+    String accountId = user.accountId();
     FundAccountRequest request = new FundAccountRequest(ACCOUNT_INVALID_FUND_AMOUNT);
+    String token = loginAndGetToken(user.username());
 
     // when
-    Response response = accountClient.fund(accountId, request);
+    Response response = accountClient.fundAuthenticated(accountId, request, token);
 
     // then
     response.then()
@@ -81,4 +90,13 @@ class AccountTests extends BaseTest {
         .body("error", equalTo(ERROR_CODE_INVALID_AMOUNT));
   }
 
+  private String loginAndGetToken(String username) {
+    AuthResponse response = authClient.login(new LoginRequest(username, DEFAULT_PASSWORD))
+        .then()
+        .statusCode(HttpStatus.SC_OK)
+        .extract()
+        .as(AuthResponse.class);
+
+    return response.token();
+  }
 }
