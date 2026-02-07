@@ -20,7 +20,13 @@ Run a single test class:
 ```bash
 ./gradlew test --tests "com.example.fintech.SomeTest"
 ```
+## Test Coverage
+- Auth tests cover registration and login flows.
+- Account tests cover funding, balance retrieval, and invalid amount handling.
+- Transaction tests cover successful payments, insufficient funds, and history listing.
+- End-to-end tests cover authenticated payment flow and balance consistency.
+- Security tests verify unauthenticated (401) and unauthorized (403) access across account and transaction endpoints.
+
 ## Notes
 - Test logging is configured to show passed/skipped/failed with full stack traces.
 - The Gradle wrapper is pinned to version 9.0.0.
-- Security tests verify unauthenticated (401) and unauthorized (403) access across account and transaction endpoints.
