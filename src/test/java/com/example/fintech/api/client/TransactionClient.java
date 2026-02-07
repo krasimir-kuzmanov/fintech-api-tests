@@ -25,8 +25,29 @@ public class TransactionClient {
         .post(PAYMENT_ENDPOINT);
   }
 
+  public Response makePaymentAuthenticated(String fromAccountId, String toAccountId, BigDecimal amount, String token) {
+    return given()
+        .header("Authorization", "Bearer " + token)
+        .contentType(ContentType.JSON)
+        .body(Map.of(
+            "fromAccountId", fromAccountId,
+            "toAccountId", toAccountId,
+            "amount", amount.toPlainString()
+        ))
+        .when()
+        .post(PAYMENT_ENDPOINT);
+  }
+
   public Response getTransactions(String accountId) {
     return given()
+        .pathParam("accountId", accountId)
+        .when()
+        .get(TRANSACTIONS_ENDPOINT);
+  }
+
+  public Response getTransactionsAuthenticated(String accountId, String token) {
+    return given()
+        .header("Authorization", "Bearer " + token)
         .pathParam("accountId", accountId)
         .when()
         .get(TRANSACTIONS_ENDPOINT);

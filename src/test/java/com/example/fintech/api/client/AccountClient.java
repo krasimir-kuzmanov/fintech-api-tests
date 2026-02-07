@@ -22,8 +22,26 @@ public class AccountClient {
         .post(FUND_ENDPOINT);
   }
 
+  public Response fundAuthenticated(String accountId, BigDecimal amount, String token) {
+    return given()
+        .header("Authorization", "Bearer " + token)
+        .contentType(ContentType.JSON)
+        .pathParam("accountId", accountId)
+        .body(Map.of("amount", amount.toPlainString()))
+        .when()
+        .post(FUND_ENDPOINT);
+  }
+
   public Response getBalance(String accountId) {
     return given()
+        .pathParam("accountId", accountId)
+        .when()
+        .get(BALANCE_ENDPOINT);
+  }
+
+  public Response getBalanceAuthenticated(String accountId, String token) {
+    return given()
+        .header("Authorization", "Bearer " + token)
         .pathParam("accountId", accountId)
         .when()
         .get(BALANCE_ENDPOINT);
