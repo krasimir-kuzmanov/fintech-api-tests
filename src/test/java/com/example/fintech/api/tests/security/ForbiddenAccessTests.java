@@ -52,7 +52,7 @@ class ForbiddenAccessTests extends BaseTest {
     String aliceToken = aliceLogin.token();
 
     // when
-    Response response = accountClient.getBalanceAuthenticated(bobAccountId, aliceToken);
+    Response response = accountClient.getBalance(bobAccountId, aliceToken);
 
     // then
     response.then()
@@ -90,7 +90,7 @@ class ForbiddenAccessTests extends BaseTest {
         UNAUTHORIZED_PAYMENT_AMOUNT);
 
     // when
-    Response response = transactionClient.makePaymentAuthenticated(request, aliceToken);
+    Response response = transactionClient.makePayment(request, aliceToken);
 
     // then
     response.then()

@@ -1,17 +1,16 @@
 package com.example.fintech.api.client;
 
+import com.example.fintech.api.testdata.TestEndpoints;
 import org.apache.http.HttpStatus;
 
 import static io.restassured.RestAssured.given;
 
 public class TestSupportClient {
 
-  private static final String RESET_ENDPOINT = "/test/reset";
-
   public void reset() {
     given()
         .when()
-        .post(RESET_ENDPOINT)
+        .post(TestEndpoints.TEST_RESET)
         .then()
         .statusCode(HttpStatus.SC_OK);
   }
