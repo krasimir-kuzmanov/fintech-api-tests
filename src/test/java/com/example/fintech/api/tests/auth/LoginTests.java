@@ -3,7 +3,7 @@ package com.example.fintech.api.tests.auth;
 import com.example.fintech.api.client.AuthClient;
 import com.example.fintech.api.model.request.LoginRequest;
 import com.example.fintech.api.model.request.RegisterRequest;
-import com.example.fintech.api.tests.BaseTest;
+import com.example.fintech.api.tests.base.BaseTest;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -17,13 +17,17 @@ class LoginTests extends BaseTest {
   private final AuthClient authClient = new AuthClient();
 
   @Test
-  void should_LoginSuccessfully_When_CredentialsAreValid() {
-    authClient.register(
-        new RegisterRequest("alice", "secret"));
+  void shouldLoginSuccessfullyWithValidCredentials() {
+    // given
+    RegisterRequest registerRequest = new RegisterRequest("alice", "secret");
+    authClient.register(registerRequest);
 
-    Response response = authClient.login(
-        new LoginRequest("alice", "secret"));
+    LoginRequest loginRequest = new LoginRequest("alice", "secret");
 
+    // when
+    Response response = authClient.login(loginRequest);
+
+    // then
     response.then()
         .statusCode(HttpStatus.SC_OK)
         .body("token", notNullValue())
@@ -31,13 +35,17 @@ class LoginTests extends BaseTest {
   }
 
   @Test
-  void should_RejectLogin_When_PasswordIsIncorrect() {
-    authClient.register(
-        new RegisterRequest("bob", "correct"));
+  void shouldRejectLoginWithIncorrectPassword() {
+    // given
+    RegisterRequest registerRequest = new RegisterRequest("bob", "correct");
+    authClient.register(registerRequest);
 
-    Response response = authClient.login(
-        new LoginRequest("bob", "wrong"));
+    LoginRequest loginRequest = new LoginRequest("bob", "wrong");
 
+    // when
+    Response response = authClient.login(loginRequest);
+
+    // then
     response.then()
         .statusCode(HttpStatus.SC_BAD_REQUEST)
         .body("error", equalTo(ERROR_CODE_INVALID_CREDENTIALS));

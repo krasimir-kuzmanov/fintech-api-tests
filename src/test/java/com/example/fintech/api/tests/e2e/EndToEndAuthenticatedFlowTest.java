@@ -2,19 +2,25 @@ package com.example.fintech.api.tests.e2e;
 
 import com.example.fintech.api.client.AccountClient;
 import com.example.fintech.api.client.AuthClient;
-import com.example.fintech.api.client.TestClient;
+import com.example.fintech.api.client.TestSupportClient;
 import com.example.fintech.api.client.TransactionClient;
 import com.example.fintech.api.model.request.FundAccountRequest;
 import com.example.fintech.api.model.request.LoginRequest;
 import com.example.fintech.api.model.request.PaymentRequest;
 import com.example.fintech.api.model.response.AuthResponse;
 import com.example.fintech.api.model.response.BalanceResponse;
-import com.example.fintech.api.tests.BaseTest;
+import com.example.fintech.api.tests.base.BaseTest;
+import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
+import static com.example.fintech.api.testdata.TestConstants.DEFAULT_PASSWORD;
+import static com.example.fintech.api.testdata.TestConstants.E2E_ALICE_BALANCE;
+import static com.example.fintech.api.testdata.TestConstants.E2E_BOB_BALANCE;
+import static com.example.fintech.api.testdata.TestConstants.E2E_FUND_AMOUNT;
+import static com.example.fintech.api.testdata.TestConstants.E2E_PAYMENT_AMOUNT;
 import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_STATUS_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -22,24 +28,29 @@ import static org.hamcrest.Matchers.hasSize;
 
 class EndToEndAuthenticatedFlowTest extends BaseTest {
 
-  private final TestClient testClient = new TestClient();
+  private final TestSupportClient testSupportClient = new TestSupportClient();
   private final AuthClient authClient = new AuthClient();
   private final AccountClient accountClient = new AccountClient();
   private final TransactionClient transactionClient = new TransactionClient();
 
   @Test
-  void should_CompleteAuthenticatedFlow_When_PaymentIsValid() {
-    testClient.reset();
+  void shouldCompleteAuthenticatedPaymentFlow() {
+    // given
+    testSupportClient.reset();
 
     RegisteredUser alice = registerUser("alice");
     RegisteredUser bob = registerUser("bob");
 
-    AuthResponse aliceLogin = authClient.login(new LoginRequest(alice.username(), "password"))
+    LoginRequest aliceLoginRequest = new LoginRequest(alice.username(), DEFAULT_PASSWORD);
+    LoginRequest bobLoginRequest = new LoginRequest(bob.username(), DEFAULT_PASSWORD);
+
+    // when
+    AuthResponse aliceLogin = authClient.login(aliceLoginRequest)
         .then()
         .statusCode(HttpStatus.SC_OK)
         .extract()
         .as(AuthResponse.class);
-    AuthResponse bobLogin = authClient.login(new LoginRequest(bob.username(), "password"))
+    AuthResponse bobLogin = authClient.login(bobLoginRequest)
         .then()
         .statusCode(HttpStatus.SC_OK)
         .extract()
@@ -48,33 +59,41 @@ class EndToEndAuthenticatedFlowTest extends BaseTest {
     String aliceToken = aliceLogin.token();
     String bobToken = bobLogin.token();
 
-    accountClient.fundAuthenticated(
-            alice.accountId(),
-            new FundAccountRequest(new BigDecimal("100.00")),
-            aliceToken)
-        .then()
+    FundAccountRequest fundRequest = new FundAccountRequest(E2E_FUND_AMOUNT);
+    PaymentRequest paymentRequest = new PaymentRequest(
+        alice.accountId(),
+        bob.accountId(),
+        E2E_PAYMENT_AMOUNT);
+
+    Response fundingResponse = accountClient.fundAuthenticated(
+        alice.accountId(),
+        fundRequest,
+        aliceToken);
+
+    Response paymentResponse = transactionClient.makePaymentAuthenticated(
+        paymentRequest,
+        aliceToken);
+
+    Response aliceBalanceResponse = accountClient.getBalanceAuthenticated(alice.accountId(), aliceToken);
+    Response bobBalanceResponse = accountClient.getBalanceAuthenticated(bob.accountId(), bobToken);
+
+    Response transactionsResponse = transactionClient.getTransactionsAuthenticated(alice.accountId(), aliceToken);
+
+    // then
+    fundingResponse.then()
         .statusCode(HttpStatus.SC_OK);
 
-    transactionClient.makePaymentAuthenticated(
-            new PaymentRequest(
-                alice.accountId(),
-                bob.accountId(),
-                new BigDecimal("40.00")),
-            aliceToken)
-        .then()
+    paymentResponse.then()
         .statusCode(HttpStatus.SC_OK)
         .body("status", equalTo(TRANSACTION_STATUS_SUCCESS));
 
-    BigDecimal aliceBalance = extractBalance(
-        accountClient.getBalanceAuthenticated(alice.accountId(), aliceToken));
-    BigDecimal bobBalance = extractBalance(
-        accountClient.getBalanceAuthenticated(bob.accountId(), bobToken));
+    BigDecimal aliceBalance = extractBalance(aliceBalanceResponse);
+    BigDecimal bobBalance = extractBalance(bobBalanceResponse);
 
-    assertThat(aliceBalance).isEqualByComparingTo(new BigDecimal("60.00"));
-    assertThat(bobBalance).isEqualByComparingTo(new BigDecimal("40.00"));
+    assertThat(aliceBalance).isEqualByComparingTo(E2E_ALICE_BALANCE);
+    assertThat(bobBalance).isEqualByComparingTo(E2E_BOB_BALANCE);
 
-    transactionClient.getTransactionsAuthenticated(alice.accountId(), aliceToken)
-        .then()
+    transactionsResponse.then()
         .statusCode(HttpStatus.SC_OK)
         .body("$", hasSize(1));
   }

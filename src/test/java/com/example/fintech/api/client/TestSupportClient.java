@@ -4,7 +4,7 @@ import org.apache.http.HttpStatus;
 
 import static io.restassured.RestAssured.given;
 
-public class TestClient {
+public class TestSupportClient {
 
   private static final String RESET_ENDPOINT = "/test/reset";
 
