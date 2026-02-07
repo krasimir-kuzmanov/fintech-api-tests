@@ -16,6 +16,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 class AccountTests extends BaseTest {
 
+  private static final BigDecimal ACCOUNT_BALANCE_AMOUNT = new BigDecimal("75.25");
   private static final BigDecimal ACCOUNT_FUND_AMOUNT = new BigDecimal("100.50");
   private static final BigDecimal ACCOUNT_INVALID_FUND_AMOUNT = new BigDecimal("-10.00");
 
@@ -45,7 +46,7 @@ class AccountTests extends BaseTest {
   void shouldReturnBalanceForExistingAccount() {
     // given
     String accountId = registerAndGetAccountId("account_user");
-    FundAccountRequest request = new FundAccountRequest(new BigDecimal("75.25"));
+    FundAccountRequest request = new FundAccountRequest(ACCOUNT_BALANCE_AMOUNT);
 
     accountClient.fund(accountId, request)
         .then()
@@ -62,7 +63,7 @@ class AccountTests extends BaseTest {
         .as(BalanceResponse.class);
 
     assertThat(balanceResponse.balance())
-        .isEqualByComparingTo(new BigDecimal("75.25"));
+        .isEqualByComparingTo(ACCOUNT_BALANCE_AMOUNT);
   }
 
   @Test

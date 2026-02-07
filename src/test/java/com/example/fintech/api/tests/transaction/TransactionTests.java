@@ -19,9 +19,9 @@ import static org.hamcrest.Matchers.equalTo;
 
 class TransactionTests extends BaseTest {
 
+  private static final BigDecimal TRANSACTION_EXCESSIVE_AMOUNT = new BigDecimal("500.00");
   private static final BigDecimal TRANSACTION_INITIAL_BALANCE = new BigDecimal("100.00");
   private static final BigDecimal TRANSACTION_PAYMENT_AMOUNT = new BigDecimal("25.00");
-  private static final BigDecimal TRANSACTION_EXCESSIVE_AMOUNT = new BigDecimal("500.00");
 
   private final AccountClient accountClient = new AccountClient();
   private final TransactionClient transactionClient = new TransactionClient();
@@ -30,7 +30,7 @@ class TransactionTests extends BaseTest {
   void shouldMakePaymentSuccessfully() {
     // given
     AccountPair accounts = registerAccounts();
-    fundAccount(accounts.fromAccountId(), TRANSACTION_INITIAL_BALANCE);
+    fundAccount(accounts.fromAccountId());
     PaymentRequest request = new PaymentRequest(
         accounts.fromAccountId(),
         accounts.toAccountId(),
@@ -51,7 +51,7 @@ class TransactionTests extends BaseTest {
   void shouldRejectPaymentWithInsufficientFunds() {
     // given
     AccountPair accounts = registerAccounts();
-    fundAccount(accounts.fromAccountId(), TRANSACTION_INITIAL_BALANCE);
+    fundAccount(accounts.fromAccountId());
     PaymentRequest request = new PaymentRequest(
         accounts.fromAccountId(),
         accounts.toAccountId(),
@@ -70,7 +70,7 @@ class TransactionTests extends BaseTest {
   void shouldReturnTransactionHistory() {
     // given
     AccountPair accounts = registerAccounts();
-    fundAccount(accounts.fromAccountId(), TRANSACTION_INITIAL_BALANCE);
+    fundAccount(accounts.fromAccountId());
     PaymentRequest firstPayment = new PaymentRequest(
         accounts.fromAccountId(),
         accounts.toAccountId(),
@@ -104,8 +104,8 @@ class TransactionTests extends BaseTest {
     return new AccountPair(fromAccountId, toAccountId);
   }
 
-  private void fundAccount(String accountId, BigDecimal amount) {
-    accountClient.fund(accountId, new FundAccountRequest(amount))
+  private void fundAccount(String accountId) {
+    accountClient.fund(accountId, new FundAccountRequest(TRANSACTION_INITIAL_BALANCE))
         .then()
         .statusCode(HttpStatus.SC_OK);
   }

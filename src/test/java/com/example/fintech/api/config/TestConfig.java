@@ -8,6 +8,7 @@ public final class TestConfig {
   private static final String CONFIG_FILE = "application.properties";
   private static final String CONFIG_BASE_URL = "base.url";
   private static final String CONFIG_HTTP_TIMEOUT_MS = "http.timeout.ms";
+
   private static final int DEFAULT_TIMEOUT_MS = 10_000;
 
   private static final Properties PROPERTIES = loadProperties();
