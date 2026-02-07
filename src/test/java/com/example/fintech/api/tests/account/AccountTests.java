@@ -10,13 +10,14 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static com.example.fintech.api.testdata.TestConstants.ACCOUNT_FUND_AMOUNT;
-import static com.example.fintech.api.testdata.TestConstants.ACCOUNT_INVALID_FUND_AMOUNT;
 import static com.example.fintech.api.testdata.TestConstants.ERROR_CODE_INVALID_AMOUNT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 class AccountTests extends BaseTest {
+
+  private static final BigDecimal ACCOUNT_FUND_AMOUNT = new BigDecimal("100.50");
+  private static final BigDecimal ACCOUNT_INVALID_FUND_AMOUNT = new BigDecimal("-10.00");
 
   private final AccountClient accountClient = new AccountClient();
 
