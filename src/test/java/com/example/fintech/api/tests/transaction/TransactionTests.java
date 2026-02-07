@@ -14,10 +14,8 @@ import java.math.BigDecimal;
 
 import static com.example.fintech.api.testdata.TestConstants.ERROR_CODE_INSUFFICIENT_FUNDS;
 import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_EXCESSIVE_AMOUNT;
-import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_FIRST_AMOUNT;
 import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_INITIAL_BALANCE;
 import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_PAYMENT_AMOUNT;
-import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_SECOND_AMOUNT;
 import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_STATUS_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -75,11 +73,11 @@ class TransactionTests extends BaseTest {
     PaymentRequest firstPayment = new PaymentRequest(
         accounts.fromAccountId(),
         accounts.toAccountId(),
-        TRANSACTION_FIRST_AMOUNT);
+        new BigDecimal("30.00"));
     PaymentRequest secondPayment = new PaymentRequest(
         accounts.fromAccountId(),
         accounts.toAccountId(),
-        TRANSACTION_SECOND_AMOUNT);
+        new BigDecimal("20.00"));
 
     transactionClient.makePayment(firstPayment)
         .then()

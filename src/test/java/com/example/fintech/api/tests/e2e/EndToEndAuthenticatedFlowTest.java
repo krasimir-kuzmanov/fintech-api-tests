@@ -17,8 +17,6 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static com.example.fintech.api.testdata.TestConstants.DEFAULT_PASSWORD;
-import static com.example.fintech.api.testdata.TestConstants.E2E_ALICE_BALANCE;
-import static com.example.fintech.api.testdata.TestConstants.E2E_BOB_BALANCE;
 import static com.example.fintech.api.testdata.TestConstants.E2E_FUND_AMOUNT;
 import static com.example.fintech.api.testdata.TestConstants.E2E_PAYMENT_AMOUNT;
 import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_STATUS_SUCCESS;
@@ -90,8 +88,10 @@ class EndToEndAuthenticatedFlowTest extends BaseTest {
     BigDecimal aliceBalance = extractBalance(aliceBalanceResponse);
     BigDecimal bobBalance = extractBalance(bobBalanceResponse);
 
-    assertThat(aliceBalance).isEqualByComparingTo(E2E_ALICE_BALANCE);
-    assertThat(bobBalance).isEqualByComparingTo(E2E_BOB_BALANCE);
+    BigDecimal expectedBalance = E2E_FUND_AMOUNT.subtract(E2E_PAYMENT_AMOUNT);
+
+    assertThat(aliceBalance).isEqualByComparingTo(expectedBalance);
+    assertThat(bobBalance).isEqualByComparingTo(E2E_PAYMENT_AMOUNT);
 
     transactionsResponse.then()
         .statusCode(HttpStatus.SC_OK)

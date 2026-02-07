@@ -8,9 +8,8 @@ import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
-import static com.example.fintech.api.testdata.TestConstants.ACCOUNT_BALANCE_AFTER_FUND;
-import static com.example.fintech.api.testdata.TestConstants.ACCOUNT_BALANCE_AFTER_TOPUP;
-import static com.example.fintech.api.testdata.TestConstants.ACCOUNT_BALANCE_FUND_AMOUNT;
+import java.math.BigDecimal;
+
 import static com.example.fintech.api.testdata.TestConstants.ACCOUNT_FUND_AMOUNT;
 import static com.example.fintech.api.testdata.TestConstants.ACCOUNT_INVALID_FUND_AMOUNT;
 import static com.example.fintech.api.testdata.TestConstants.ERROR_CODE_INVALID_AMOUNT;
@@ -38,14 +37,14 @@ class AccountTests extends BaseTest {
         .as(BalanceResponse.class);
 
     assertThat(balanceResponse.balance())
-        .isEqualByComparingTo(ACCOUNT_BALANCE_AFTER_FUND);
+        .isEqualByComparingTo(ACCOUNT_FUND_AMOUNT);
   }
 
   @Test
   void shouldReturnBalanceForExistingAccount() {
     // given
     String accountId = registerAndGetAccountId("account_user");
-    FundAccountRequest request = new FundAccountRequest(ACCOUNT_BALANCE_FUND_AMOUNT);
+    FundAccountRequest request = new FundAccountRequest(new BigDecimal("75.25"));
 
     accountClient.fund(accountId, request)
         .then()
@@ -62,7 +61,7 @@ class AccountTests extends BaseTest {
         .as(BalanceResponse.class);
 
     assertThat(balanceResponse.balance())
-        .isEqualByComparingTo(ACCOUNT_BALANCE_AFTER_TOPUP);
+        .isEqualByComparingTo(new BigDecimal("75.25"));
   }
 
   @Test
