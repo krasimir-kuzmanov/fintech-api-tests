@@ -21,13 +21,13 @@ class AccountTests extends BaseTest {
 
     Response response = accountClient.fund(accountId, new BigDecimal("100.50"));
 
-    Float balanceValue = response
+    Number balanceValue = response
         .then()
         .statusCode(HttpStatus.SC_OK)
         .extract()
         .path("balance");
 
-    assertThat(BigDecimal.valueOf(balanceValue))
+    assertThat(new BigDecimal(balanceValue.toString()))
         .isEqualByComparingTo(new BigDecimal("100.50"));
   }
 
@@ -41,13 +41,13 @@ class AccountTests extends BaseTest {
 
     Response response = accountClient.getBalance(accountId);
 
-    Float balanceValue = response
+    Number balanceValue = response
         .then()
         .statusCode(HttpStatus.SC_OK)
         .extract()
         .path("balance");
 
-    assertThat(BigDecimal.valueOf(balanceValue))
+    assertThat(new BigDecimal(balanceValue.toString()))
         .isEqualByComparingTo(new BigDecimal("75.25"));
   }
 
