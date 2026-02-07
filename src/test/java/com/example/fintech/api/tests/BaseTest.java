@@ -3,13 +3,12 @@ package com.example.fintech.api.tests;
 import com.example.fintech.api.client.AuthClient;
 import com.example.fintech.api.client.TestClient;
 import com.example.fintech.api.config.RestAssuredConfig;
-import com.example.fintech.api.model.RegisterRequest;
+import com.example.fintech.api.model.request.RegisterRequest;
+import com.example.fintech.api.testdata.TestDataFactory;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
-
-import java.util.UUID;
 
 public abstract class BaseTest {
 
@@ -33,9 +32,8 @@ public abstract class BaseTest {
   }
 
   protected RegisteredUser registerUser(String usernamePrefix) {
-    String username = usernamePrefix + "_" + UUID.randomUUID();
-    Response response = authClient.register(
-        new RegisterRequest(username, "password"));
+    RegisterRequest request = TestDataFactory.userWithPrefix(usernamePrefix);
+    Response response = authClient.register(request);
 
     String accountId = response
         .then()
@@ -43,7 +41,7 @@ public abstract class BaseTest {
         .extract()
         .path("id");
 
-    return new RegisteredUser(username, accountId);
+    return new RegisteredUser(request.username(), accountId);
   }
 
   protected record RegisteredUser(String username, String accountId) {

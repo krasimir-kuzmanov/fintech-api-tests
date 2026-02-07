@@ -1,4 +1,4 @@
-package com.example.fintech.api.tests;
+package com.example.fintech.api.testdata;
 
 public final class TestConstants {
 

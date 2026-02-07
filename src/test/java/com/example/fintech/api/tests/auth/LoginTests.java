@@ -1,13 +1,14 @@
-package com.example.fintech.api.tests;
+package com.example.fintech.api.tests.auth;
 
 import com.example.fintech.api.client.AuthClient;
-import com.example.fintech.api.model.LoginRequest;
-import com.example.fintech.api.model.RegisterRequest;
+import com.example.fintech.api.model.request.LoginRequest;
+import com.example.fintech.api.model.request.RegisterRequest;
+import com.example.fintech.api.tests.BaseTest;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
-import static com.example.fintech.api.tests.TestConstants.ERROR_CODE_INVALID_CREDENTIALS;
+import static com.example.fintech.api.testdata.TestConstants.ERROR_CODE_INVALID_CREDENTIALS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 

@@ -1,47 +1,38 @@
 package com.example.fintech.api.client;
 
-import io.restassured.http.ContentType;
+import com.example.fintech.api.model.request.FundAccountRequest;
 import io.restassured.response.Response;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
-import static io.restassured.RestAssured.given;
-
-public class AccountClient {
+public class AccountClient extends BaseClient {
 
   private static final String FUND_ENDPOINT = "/account/{accountId}/fund";
   private static final String BALANCE_ENDPOINT = "/account/{accountId}";
 
-  public Response fund(String accountId, BigDecimal amount) {
-    return given()
-        .contentType(ContentType.JSON)
+  public Response fund(String accountId, FundAccountRequest request) {
+    return baseRequest()
         .pathParam("accountId", accountId)
-        .body(Map.of("amount", amount.toPlainString()))
+        .body(request)
         .when()
         .post(FUND_ENDPOINT);
   }
 
-  public Response fundAuthenticated(String accountId, BigDecimal amount, String token) {
-    return given()
-        .header("Authorization", "Bearer " + token)
-        .contentType(ContentType.JSON)
+  public Response fundAuthenticated(String accountId, FundAccountRequest request, String token) {
+    return authRequest(token)
         .pathParam("accountId", accountId)
-        .body(Map.of("amount", amount.toPlainString()))
+        .body(request)
         .when()
         .post(FUND_ENDPOINT);
   }
 
   public Response getBalance(String accountId) {
-    return given()
+    return baseRequest()
         .pathParam("accountId", accountId)
         .when()
         .get(BALANCE_ENDPOINT);
   }
 
   public Response getBalanceAuthenticated(String accountId, String token) {
-    return given()
-        .header("Authorization", "Bearer " + token)
+    return authRequest(token)
         .pathParam("accountId", accountId)
         .when()
         .get(BALANCE_ENDPOINT);

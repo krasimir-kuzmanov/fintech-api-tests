@@ -1,8 +1,8 @@
 package com.example.fintech.api.client;
 
-import static io.restassured.RestAssured.given;
-
 import org.apache.http.HttpStatus;
+
+import static io.restassured.RestAssured.given;
 
 public class TestClient {
 

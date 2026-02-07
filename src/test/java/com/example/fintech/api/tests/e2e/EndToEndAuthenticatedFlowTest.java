@@ -1,17 +1,21 @@
-package com.example.fintech.api.tests;
+package com.example.fintech.api.tests.e2e;
 
 import com.example.fintech.api.client.AccountClient;
 import com.example.fintech.api.client.AuthClient;
 import com.example.fintech.api.client.TestClient;
 import com.example.fintech.api.client.TransactionClient;
-import com.example.fintech.api.model.LoginRequest;
-import io.restassured.response.Response;
+import com.example.fintech.api.model.request.FundAccountRequest;
+import com.example.fintech.api.model.request.LoginRequest;
+import com.example.fintech.api.model.request.PaymentRequest;
+import com.example.fintech.api.model.response.AuthResponse;
+import com.example.fintech.api.model.response.BalanceResponse;
+import com.example.fintech.api.tests.BaseTest;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static com.example.fintech.api.tests.TestConstants.TRANSACTION_STATUS_SUCCESS;
+import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_STATUS_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -30,20 +34,32 @@ class EndToEndAuthenticatedFlowTest extends BaseTest {
     RegisteredUser alice = registerUser("alice");
     RegisteredUser bob = registerUser("bob");
 
-    Response aliceLogin = authClient.login(new LoginRequest(alice.username(), "password"));
-    Response bobLogin = authClient.login(new LoginRequest(bob.username(), "password"));
+    AuthResponse aliceLogin = authClient.login(new LoginRequest(alice.username(), "password"))
+        .then()
+        .statusCode(HttpStatus.SC_OK)
+        .extract()
+        .as(AuthResponse.class);
+    AuthResponse bobLogin = authClient.login(new LoginRequest(bob.username(), "password"))
+        .then()
+        .statusCode(HttpStatus.SC_OK)
+        .extract()
+        .as(AuthResponse.class);
 
-    String aliceToken = aliceLogin.then().statusCode(HttpStatus.SC_OK).extract().path("token");
-    String bobToken = bobLogin.then().statusCode(HttpStatus.SC_OK).extract().path("token");
+    String aliceToken = aliceLogin.token();
+    String bobToken = bobLogin.token();
 
-    accountClient.fundAuthenticated(alice.accountId(), new BigDecimal("100.00"), aliceToken)
+    accountClient.fundAuthenticated(
+            alice.accountId(),
+            new FundAccountRequest(new BigDecimal("100.00")),
+            aliceToken)
         .then()
         .statusCode(HttpStatus.SC_OK);
 
     transactionClient.makePaymentAuthenticated(
-            alice.accountId(),
-            bob.accountId(),
-            new BigDecimal("40.00"),
+            new PaymentRequest(
+                alice.accountId(),
+                bob.accountId(),
+                new BigDecimal("40.00")),
             aliceToken)
         .then()
         .statusCode(HttpStatus.SC_OK)
@@ -63,13 +79,13 @@ class EndToEndAuthenticatedFlowTest extends BaseTest {
         .body("$", hasSize(1));
   }
 
-  private BigDecimal extractBalance(Response response) {
-    Number balanceValue = response
+  private BigDecimal extractBalance(io.restassured.response.Response response) {
+    BalanceResponse balanceResponse = response
         .then()
         .statusCode(HttpStatus.SC_OK)
         .extract()
-        .path("balance");
+        .as(BalanceResponse.class);
 
-    return new BigDecimal(balanceValue.toString());
+    return balanceResponse.balance();
   }
 }
