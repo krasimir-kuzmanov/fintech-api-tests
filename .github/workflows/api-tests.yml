@@ -1,0 +1,54 @@
+name: API Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout API tests
+        uses: actions/checkout@v4
+
+      - name: Checkout backend
+        uses: actions/checkout@v4
+        with:
+          repository: krasimir-kuzmanov/fintech-backend
+          path: fintech-backend
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build backend
+        run: |
+          cd fintech-backend
+          ./gradlew clean build -x test
+
+      - name: Start backend
+        run: |
+          cd fintech-backend
+          ./gradlew bootRun &
+
+      - name: Wait for backend
+        run: |
+          until curl -s http://localhost:8080/actuator/health | grep UP; do
+            echo "Waiting for backend..."
+            sleep 2
+          done
+
+      - name: Run API tests
+        run: |
+          ./gradlew clean test
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-report
+          path: build/reports/tests/test

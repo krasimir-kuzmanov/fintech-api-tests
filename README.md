@@ -1,5 +1,7 @@
 # fintech-api-tests
 
+![API Tests](https://github.com/krasimir-kuzmanov/fintech-api-tests/actions/workflows/api-tests.yml/badge.svg)
+
 API test suite for fintech services using JUnit 5 and RestAssured.
 
 ## Requirements
@@ -28,6 +30,9 @@ Run a single test class:
 - Security tests verify unauthenticated (401) and unauthorized (403) access across account and transaction endpoints.
 - Token validation tests cover invalid tokens and missing `Bearer` prefix handling (401).
 - Negative account and transaction tests cover zero and non-numeric amount validation (400).
+
+### CI
+API tests are executed automatically on every push and pull request using GitHub Actions.
 
 ## Parallel Test Execution
 API tests are designed to run in parallel. Tests rely on randomized data and avoid shared state assumptions to prevent inter-test coupling.
