@@ -26,6 +26,8 @@ Run a single test class:
 - Transaction tests cover successful payments, insufficient funds, and history listing.
 - End-to-end tests cover authenticated payment flow and balance consistency.
 - Security tests verify unauthenticated (401) and unauthorized (403) access across account and transaction endpoints.
+- Token validation tests cover invalid tokens and missing `Bearer` prefix handling (401).
+- Negative account and transaction tests cover zero and non-numeric amount validation (400).
 
 ## Notes
 - Test logging is configured to show passed/skipped/failed with full stack traces.

@@ -1,14 +1,13 @@
 package com.example.fintech.api.client;
 
+import static com.example.fintech.api.testdata.HttpConstants.AUTH_HEADER;
+import static com.example.fintech.api.testdata.HttpConstants.BEARER_PREFIX;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 
 import static io.restassured.RestAssured.given;
 
 public abstract class BaseClient {
-
-  private static final String AUTH_HEADER = "Authorization";
-  private static final String BEARER_PREFIX = "Bearer ";
 
   protected RequestSpecification baseRequest() {
     return given()
