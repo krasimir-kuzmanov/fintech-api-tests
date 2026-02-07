@@ -13,14 +13,15 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static com.example.fintech.api.testdata.TestConstants.ERROR_CODE_INSUFFICIENT_FUNDS;
-import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_EXCESSIVE_AMOUNT;
-import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_INITIAL_BALANCE;
-import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_PAYMENT_AMOUNT;
 import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_STATUS_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 
 class TransactionTests extends BaseTest {
+
+  private static final BigDecimal TRANSACTION_INITIAL_BALANCE = new BigDecimal("100.00");
+  private static final BigDecimal TRANSACTION_PAYMENT_AMOUNT = new BigDecimal("25.00");
+  private static final BigDecimal TRANSACTION_EXCESSIVE_AMOUNT = new BigDecimal("500.00");
 
   private final AccountClient accountClient = new AccountClient();
   private final TransactionClient transactionClient = new TransactionClient();

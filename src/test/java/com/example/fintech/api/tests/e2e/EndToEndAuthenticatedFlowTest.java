@@ -17,14 +17,15 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static com.example.fintech.api.testdata.TestConstants.DEFAULT_PASSWORD;
-import static com.example.fintech.api.testdata.TestConstants.E2E_FUND_AMOUNT;
-import static com.example.fintech.api.testdata.TestConstants.E2E_PAYMENT_AMOUNT;
 import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_STATUS_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 class EndToEndAuthenticatedFlowTest extends BaseTest {
+
+  private static final BigDecimal E2E_FUND_AMOUNT = new BigDecimal("100.00");
+  private static final BigDecimal E2E_PAYMENT_AMOUNT = new BigDecimal("40.00");
 
   private final TestSupportClient testSupportClient = new TestSupportClient();
   private final AuthClient authClient = new AuthClient();
