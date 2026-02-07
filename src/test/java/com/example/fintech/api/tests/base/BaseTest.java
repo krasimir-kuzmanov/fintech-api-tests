@@ -1,7 +1,7 @@
-package com.example.fintech.api.tests;
+package com.example.fintech.api.tests.base;
 
 import com.example.fintech.api.client.AuthClient;
-import com.example.fintech.api.client.TestClient;
+import com.example.fintech.api.client.TestSupportClient;
 import com.example.fintech.api.config.RestAssuredConfig;
 import com.example.fintech.api.model.request.RegisterRequest;
 import com.example.fintech.api.testdata.TestDataFactory;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.BeforeEach;
 
 public abstract class BaseTest {
 
-  protected final TestClient testClient = new TestClient();
+  protected final TestSupportClient testSupportClient = new TestSupportClient();
   protected final AuthClient authClient = new AuthClient();
 
   @BeforeAll
@@ -22,7 +22,7 @@ public abstract class BaseTest {
 
   @BeforeEach
   void resetState() {
-    testClient.reset();
+    testSupportClient.reset();
   }
 
   protected String registerAndGetAccountId(String usernamePrefix) {

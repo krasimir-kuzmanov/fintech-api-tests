@@ -7,5 +7,6 @@ public final class TestConstants {
   public static final String ERROR_CODE_INVALID_AMOUNT = "INVALID_AMOUNT";
   public static final String ERROR_CODE_INSUFFICIENT_FUNDS = "INSUFFICIENT_FUNDS";
   public static final String TRANSACTION_STATUS_SUCCESS = "SUCCESS";
+  public static final String DEFAULT_PASSWORD = "password";
 
 }

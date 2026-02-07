@@ -3,7 +3,7 @@ package com.example.fintech.api.tests.account;
 import com.example.fintech.api.client.AccountClient;
 import com.example.fintech.api.model.request.FundAccountRequest;
 import com.example.fintech.api.model.response.BalanceResponse;
-import com.example.fintech.api.tests.BaseTest;
+import com.example.fintech.api.tests.base.BaseTest;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
@@ -16,14 +16,21 @@ import static org.hamcrest.Matchers.equalTo;
 
 class AccountTests extends BaseTest {
 
+  private static final BigDecimal ACCOUNT_FUND_AMOUNT = new BigDecimal("100.50");
+  private static final BigDecimal ACCOUNT_INVALID_FUND_AMOUNT = new BigDecimal("-10.00");
+
   private final AccountClient accountClient = new AccountClient();
 
   @Test
-  void should_FundAccount_When_RequestIsValid() {
+  void shouldFundAccountSuccessfully() {
+    // given
     String accountId = registerAndGetAccountId("account_user");
+    FundAccountRequest request = new FundAccountRequest(ACCOUNT_FUND_AMOUNT);
 
-    Response response = accountClient.fund(accountId, new FundAccountRequest(new BigDecimal("100.50")));
+    // when
+    Response response = accountClient.fund(accountId, request);
 
+    // then
     BalanceResponse balanceResponse = response
         .then()
         .statusCode(HttpStatus.SC_OK)
@@ -31,19 +38,23 @@ class AccountTests extends BaseTest {
         .as(BalanceResponse.class);
 
     assertThat(balanceResponse.balance())
-        .isEqualByComparingTo(new BigDecimal("100.50"));
+        .isEqualByComparingTo(ACCOUNT_FUND_AMOUNT);
   }
 
   @Test
-  void should_ReturnBalance_When_AccountHasFunds() {
+  void shouldReturnBalanceForExistingAccount() {
+    // given
     String accountId = registerAndGetAccountId("account_user");
+    FundAccountRequest request = new FundAccountRequest(new BigDecimal("75.25"));
 
-    accountClient.fund(accountId, new FundAccountRequest(new BigDecimal("75.25")))
+    accountClient.fund(accountId, request)
         .then()
         .statusCode(HttpStatus.SC_OK);
 
+    // when
     Response response = accountClient.getBalance(accountId);
 
+    // then
     BalanceResponse balanceResponse = response
         .then()
         .statusCode(HttpStatus.SC_OK)
@@ -55,11 +66,16 @@ class AccountTests extends BaseTest {
   }
 
   @Test
-  void should_RejectFunding_When_AmountIsNegative() {
+  void shouldRejectFundingWithNegativeAmount() {
+    // given
     String accountId = registerAndGetAccountId("account_user");
+    FundAccountRequest request = new FundAccountRequest(ACCOUNT_INVALID_FUND_AMOUNT);
 
-    accountClient.fund(accountId, new FundAccountRequest(new BigDecimal("-10")))
-        .then()
+    // when
+    Response response = accountClient.fund(accountId, request);
+
+    // then
+    response.then()
         .statusCode(HttpStatus.SC_BAD_REQUEST)
         .body("error", equalTo(ERROR_CODE_INVALID_AMOUNT));
   }

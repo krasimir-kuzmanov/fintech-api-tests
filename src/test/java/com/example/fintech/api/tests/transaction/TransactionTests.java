@@ -5,8 +5,9 @@ import com.example.fintech.api.client.TransactionClient;
 import com.example.fintech.api.model.request.FundAccountRequest;
 import com.example.fintech.api.model.request.PaymentRequest;
 import com.example.fintech.api.model.response.TransactionResponse;
-import com.example.fintech.api.tests.BaseTest;
+import com.example.fintech.api.tests.base.BaseTest;
 import org.apache.http.HttpStatus;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -18,65 +19,80 @@ import static org.hamcrest.Matchers.equalTo;
 
 class TransactionTests extends BaseTest {
 
+  private static final BigDecimal TRANSACTION_INITIAL_BALANCE = new BigDecimal("100.00");
+  private static final BigDecimal TRANSACTION_PAYMENT_AMOUNT = new BigDecimal("25.00");
+  private static final BigDecimal TRANSACTION_EXCESSIVE_AMOUNT = new BigDecimal("500.00");
+
   private final AccountClient accountClient = new AccountClient();
   private final TransactionClient transactionClient = new TransactionClient();
 
   @Test
-  void should_MakePayment_When_RequestIsValid() {
+  void shouldMakePaymentSuccessfully() {
+    // given
     AccountPair accounts = registerAccounts();
-    fundAccount(accounts.fromAccountId(), new BigDecimal("100.00"));
+    fundAccount(accounts.fromAccountId(), TRANSACTION_INITIAL_BALANCE);
+    PaymentRequest request = new PaymentRequest(
+        accounts.fromAccountId(),
+        accounts.toAccountId(),
+        TRANSACTION_PAYMENT_AMOUNT);
 
-    TransactionResponse response = transactionClient.makePayment(
-            new PaymentRequest(
-                accounts.fromAccountId(),
-                accounts.toAccountId(),
-                new BigDecimal("25.00")))
+    // when
+    TransactionResponse response = transactionClient.makePayment(request)
         .then()
         .statusCode(HttpStatus.SC_OK)
         .extract()
         .as(TransactionResponse.class);
 
+    // then
     assertThat(response.status()).isEqualTo(TRANSACTION_STATUS_SUCCESS);
   }
 
   @Test
-  void should_RejectPayment_When_InsufficientFunds() {
+  void shouldRejectPaymentWithInsufficientFunds() {
+    // given
     AccountPair accounts = registerAccounts();
-    fundAccount(accounts.fromAccountId(), new BigDecimal("100.00"));
+    fundAccount(accounts.fromAccountId(), TRANSACTION_INITIAL_BALANCE);
+    PaymentRequest request = new PaymentRequest(
+        accounts.fromAccountId(),
+        accounts.toAccountId(),
+        TRANSACTION_EXCESSIVE_AMOUNT);
 
-    transactionClient.makePayment(
-            new PaymentRequest(
-                accounts.fromAccountId(),
-                accounts.toAccountId(),
-                new BigDecimal("500.00")))
-        .then()
+    // when
+    Response response = transactionClient.makePayment(request);
+
+    // then
+    response.then()
         .statusCode(HttpStatus.SC_BAD_REQUEST)
         .body("error", equalTo(ERROR_CODE_INSUFFICIENT_FUNDS));
   }
 
   @Test
-  void should_ReturnTransactions_When_AccountHasHistory() {
+  void shouldReturnTransactionHistory() {
+    // given
     AccountPair accounts = registerAccounts();
-    fundAccount(accounts.fromAccountId(), new BigDecimal("100.00"));
+    fundAccount(accounts.fromAccountId(), TRANSACTION_INITIAL_BALANCE);
+    PaymentRequest firstPayment = new PaymentRequest(
+        accounts.fromAccountId(),
+        accounts.toAccountId(),
+        new BigDecimal("30.00"));
+    PaymentRequest secondPayment = new PaymentRequest(
+        accounts.fromAccountId(),
+        accounts.toAccountId(),
+        new BigDecimal("20.00"));
 
-    transactionClient.makePayment(
-            new PaymentRequest(
-                accounts.fromAccountId(),
-                accounts.toAccountId(),
-                new BigDecimal("30.00")))
+    transactionClient.makePayment(firstPayment)
         .then()
         .statusCode(HttpStatus.SC_OK);
 
-    transactionClient.makePayment(
-            new PaymentRequest(
-                accounts.fromAccountId(),
-                accounts.toAccountId(),
-                new BigDecimal("20.00")))
+    transactionClient.makePayment(secondPayment)
         .then()
         .statusCode(HttpStatus.SC_OK);
 
-    transactionClient.getTransactions(accounts.fromAccountId())
-        .then()
+    // when
+    Response response = transactionClient.getTransactions(accounts.fromAccountId());
+
+    // then
+    response.then()
         .statusCode(HttpStatus.SC_OK)
         .body("size()", equalTo(2));
   }
