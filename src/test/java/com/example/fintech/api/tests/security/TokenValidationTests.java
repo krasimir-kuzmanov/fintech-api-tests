@@ -1,7 +1,6 @@
 package com.example.fintech.api.tests.security;
 
 import com.example.fintech.api.client.AuthClient;
-import com.example.fintech.api.client.TestSupportClient;
 import com.example.fintech.api.model.request.LoginRequest;
 import com.example.fintech.api.model.request.RegisterRequest;
 import com.example.fintech.api.model.response.AuthResponse;
@@ -22,14 +21,11 @@ class TokenValidationTests extends BaseTest {
 
   private static final String INVALID_TOKEN = "invalid-token";
 
-  private final TestSupportClient testSupportClient = new TestSupportClient();
   private final AuthClient authClient = new AuthClient();
 
   @Test
   void shouldReturn401WhenTokenIsInvalid() {
     // given
-    testSupportClient.reset();
-
     RegisterRequest user = TestDataFactory.userWithPrefix("token");
     String accountId = authClient.register(user)
         .then()
@@ -52,8 +48,6 @@ class TokenValidationTests extends BaseTest {
   @Test
   void shouldReturn401WhenBearerPrefixIsMissing() {
     // given
-    testSupportClient.reset();
-
     RegisterRequest user = TestDataFactory.userWithPrefix("token");
     String accountId = authClient.register(user)
         .then()

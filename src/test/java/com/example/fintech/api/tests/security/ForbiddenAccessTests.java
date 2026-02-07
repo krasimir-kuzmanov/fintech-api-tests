@@ -2,7 +2,6 @@ package com.example.fintech.api.tests.security;
 
 import com.example.fintech.api.client.AccountClient;
 import com.example.fintech.api.client.AuthClient;
-import com.example.fintech.api.client.TestSupportClient;
 import com.example.fintech.api.client.TransactionClient;
 import com.example.fintech.api.model.request.LoginRequest;
 import com.example.fintech.api.model.request.PaymentRequest;
@@ -23,14 +22,11 @@ class ForbiddenAccessTests extends BaseTest {
 
   private final AccountClient accountClient = new AccountClient();
   private final AuthClient authClient = new AuthClient();
-  private final TestSupportClient testSupportClient = new TestSupportClient();
   private final TransactionClient transactionClient = new TransactionClient();
 
   @Test
   void shouldReturn403WhenAccessingAnotherUsersAccount() {
     // given
-    testSupportClient.reset();
-
     RegisterRequest alice = TestDataFactory.userWithPrefix("alice");
     RegisterRequest bob = TestDataFactory.userWithPrefix("bob");
 
@@ -62,8 +58,6 @@ class ForbiddenAccessTests extends BaseTest {
   @Test
   void shouldReturn403WhenPayingFromAccountNotOwnedByUser() {
     // given
-    testSupportClient.reset();
-
     RegisterRequest alice = TestDataFactory.userWithPrefix("alice");
     RegisterRequest bob = TestDataFactory.userWithPrefix("bob");
 

@@ -2,7 +2,6 @@ package com.example.fintech.api.tests.e2e;
 
 import com.example.fintech.api.client.AccountClient;
 import com.example.fintech.api.client.AuthClient;
-import com.example.fintech.api.client.TestSupportClient;
 import com.example.fintech.api.client.TransactionClient;
 import com.example.fintech.api.model.request.FundAccountRequest;
 import com.example.fintech.api.model.request.LoginRequest;
@@ -29,14 +28,11 @@ class EndToEndAuthenticatedFlowTest extends BaseTest {
 
   private final AccountClient accountClient = new AccountClient();
   private final AuthClient authClient = new AuthClient();
-  private final TestSupportClient testSupportClient = new TestSupportClient();
   private final TransactionClient transactionClient = new TransactionClient();
 
   @Test
   void shouldCompletePaymentFlow() {
     // given
-    testSupportClient.reset();
-
     RegisteredUser alice = registerUser("alice");
     RegisteredUser bob = registerUser("bob");
 

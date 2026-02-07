@@ -29,6 +29,9 @@ Run a single test class:
 - Token validation tests cover invalid tokens and missing `Bearer` prefix handling (401).
 - Negative account and transaction tests cover zero and non-numeric amount validation (400).
 
+## Parallel Test Execution
+API tests are designed to run in parallel. Tests rely on randomized data and avoid shared state assumptions to prevent inter-test coupling.
+
 ## Notes
 - Test logging is configured to show passed/skipped/failed with full stack traces.
 - The Gradle wrapper is pinned to version 9.0.0.

@@ -1,7 +1,6 @@
 package com.example.fintech.api.tests.security;
 
 import com.example.fintech.api.client.AuthClient;
-import com.example.fintech.api.client.TestSupportClient;
 import com.example.fintech.api.model.request.FundAccountRequest;
 import com.example.fintech.api.model.request.LoginRequest;
 import com.example.fintech.api.model.request.RegisterRequest;
@@ -25,14 +24,11 @@ class AuthorizationTests extends BaseTest {
 
   private static final BigDecimal FUND_AMOUNT = new BigDecimal("10.00");
 
-  private final TestSupportClient testSupportClient = new TestSupportClient();
   private final AuthClient authClient = new AuthClient();
 
   @Test
   void shouldReturn403WhenFundingAnotherUsersAccount() {
     // given
-    testSupportClient.reset();
-
     RegisterRequest alice = TestDataFactory.userWithPrefix("alice");
     RegisterRequest bob = TestDataFactory.userWithPrefix("bob");
 
@@ -69,8 +65,6 @@ class AuthorizationTests extends BaseTest {
   @Test
   void shouldReturn403WhenGettingAnotherUsersTransactions() {
     // given
-    testSupportClient.reset();
-
     RegisterRequest alice = TestDataFactory.userWithPrefix("alice");
     RegisterRequest bob = TestDataFactory.userWithPrefix("bob");
 
