@@ -34,6 +34,15 @@ Run a single test class:
 ### CI
 API tests are executed automatically on every push and pull request using GitHub Actions.
 
+### Reporting
+API test execution generates an Allure report, published as a CI artifact for each run.
+
+Generate the report locally:
+```bash
+./gradlew test
+./gradlew allureReport
+```
+
 ## Parallel Test Execution
 API tests are designed to run in parallel. Tests rely on randomized data and avoid shared state assumptions to prevent inter-test coupling.
 

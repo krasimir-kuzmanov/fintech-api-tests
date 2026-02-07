@@ -46,9 +46,21 @@ jobs:
         run: |
           ./gradlew clean test
 
+      - name: Generate Allure Report
+        if: always()
+        run: |
+          ./gradlew allureReport
+
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: api-test-report
           path: build/reports/tests/test
+
+      - name: Upload Allure Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report
+          path: build/reports/allure-report

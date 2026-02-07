@@ -6,6 +6,10 @@ group = 'com.example.fintech'
 version = '1.0.0'
 description = 'fintech-api-tests'
 
+configurations {
+  allureCommandline
+}
+
 java {
   toolchain {
     languageVersion = JavaLanguageVersion.of(21)
@@ -20,6 +24,10 @@ dependencies {
   // JUnit 5
   testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
   testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
+
+  // Allure
+  testImplementation 'io.qameta.allure:allure-junit5:2.27.0'
+  allureCommandline 'io.qameta.allure:allure-commandline:2.27.0'
 
   // RestAssured
   testImplementation 'io.rest-assured:rest-assured:5.4.0'
@@ -42,6 +50,7 @@ tasks.named('test') {
   systemProperty "junit.jupiter.execution.parallel.enabled", "true"
   systemProperty "junit.jupiter.execution.parallel.mode.default", "concurrent"
   systemProperty "junit.jupiter.execution.parallel.mode.classes.default", "concurrent"
+  systemProperty "allure.results.directory", layout.buildDirectory.dir("allure-results").get().asFile.absolutePath
 
   testLogging {
     events "passed", "skipped", "failed"
@@ -51,4 +60,16 @@ tasks.named('test') {
 
 tasks.withType(Test).configureEach {
   maxParallelForks = Math.min(4, Runtime.runtime.availableProcessors())
+}
+
+tasks.register('allureReport', JavaExec) {
+  group = 'verification'
+  description = 'Generate Allure report'
+  classpath = configurations.allureCommandline
+  mainClass = 'io.qameta.allure.CommandLine'
+  args 'generate',
+      layout.buildDirectory.dir("allure-results").get().asFile.absolutePath,
+      '-o',
+      layout.buildDirectory.dir("reports/allure-report").get().asFile.absolutePath,
+      '--clean'
 }
