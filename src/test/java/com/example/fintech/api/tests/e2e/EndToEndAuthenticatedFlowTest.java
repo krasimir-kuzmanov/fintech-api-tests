@@ -27,9 +27,9 @@ class EndToEndAuthenticatedFlowTest extends BaseTest {
   private static final BigDecimal E2E_FUND_AMOUNT = new BigDecimal("100.00");
   private static final BigDecimal E2E_PAYMENT_AMOUNT = new BigDecimal("40.00");
 
-  private final TestSupportClient testSupportClient = new TestSupportClient();
-  private final AuthClient authClient = new AuthClient();
   private final AccountClient accountClient = new AccountClient();
+  private final AuthClient authClient = new AuthClient();
+  private final TestSupportClient testSupportClient = new TestSupportClient();
   private final TransactionClient transactionClient = new TransactionClient();
 
   @Test

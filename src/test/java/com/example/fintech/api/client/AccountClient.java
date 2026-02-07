@@ -5,8 +5,8 @@ import io.restassured.response.Response;
 
 public class AccountClient extends BaseClient {
 
-  private static final String FUND_ENDPOINT = "/account/{accountId}/fund";
   private static final String BALANCE_ENDPOINT = "/account/{accountId}";
+  private static final String FUND_ENDPOINT = "/account/{accountId}/fund";
 
   public Response fund(String accountId, FundAccountRequest request) {
     return baseRequest()

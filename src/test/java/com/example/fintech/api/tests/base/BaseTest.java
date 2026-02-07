@@ -12,8 +12,8 @@ import org.junit.jupiter.api.BeforeEach;
 
 public abstract class BaseTest {
 
-  protected final TestSupportClient testSupportClient = new TestSupportClient();
   protected final AuthClient authClient = new AuthClient();
+  protected final TestSupportClient testSupportClient = new TestSupportClient();
 
   @BeforeAll
   static void setup() {
