@@ -3,11 +3,11 @@ package com.example.fintech.api.tests.auth;
 import com.example.fintech.api.client.AuthClient;
 import com.example.fintech.api.model.request.RegisterRequest;
 import com.example.fintech.api.tests.base.BaseTest;
+import com.example.fintech.api.testdata.TestDataFactory;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.Test;
 
-import static com.example.fintech.api.testdata.TestConstants.DEFAULT_PASSWORD;
 import static com.example.fintech.api.testdata.TestConstants.ERROR_CODE_USER_ALREADY_EXISTS;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -19,7 +19,7 @@ class RegisterTests extends BaseTest {
   @Test
   void shouldRegisterUserSuccessfully() {
     // given
-    RegisterRequest request = new RegisterRequest("john", DEFAULT_PASSWORD);
+    RegisterRequest request = TestDataFactory.userWithPrefix("john");
 
     // when
     Response response = authClient.register(request);
@@ -27,14 +27,14 @@ class RegisterTests extends BaseTest {
     // then
     response.then()
         .statusCode(HttpStatus.SC_OK)
-        .body("username", equalTo("john"))
+        .body("username", equalTo(request.username()))
         .body("id", notNullValue());
   }
 
   @Test
   void shouldRejectDuplicateRegistration() {
     // given
-    RegisterRequest request = new RegisterRequest("john", DEFAULT_PASSWORD);
+    RegisterRequest request = TestDataFactory.userWithPrefix("john");
 
     // when
     authClient.register(request)

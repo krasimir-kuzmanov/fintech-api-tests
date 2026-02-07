@@ -1,7 +1,6 @@
 package com.example.fintech.api.tests.transaction;
 
 import com.example.fintech.api.client.AuthClient;
-import com.example.fintech.api.client.TestSupportClient;
 import com.example.fintech.api.model.request.LoginRequest;
 import com.example.fintech.api.model.request.RegisterRequest;
 import com.example.fintech.api.model.response.AuthResponse;
@@ -27,14 +26,11 @@ class TransactionNegativeTests extends BaseTest {
   private static final String NON_NUMERIC_AMOUNT = "abc";
   private static final BigDecimal ZERO_AMOUNT = BigDecimal.ZERO;
 
-  private final TestSupportClient testSupportClient = new TestSupportClient();
   private final AuthClient authClient = new AuthClient();
 
   @Test
   void shouldReturn400WhenPaymentAmountIsZero() {
     // given
-    testSupportClient.reset();
-
     RegisterRequest user = TestDataFactory.userWithPrefix("payer");
     String fromAccountId = authClient.register(user)
         .then()
@@ -68,8 +64,6 @@ class TransactionNegativeTests extends BaseTest {
   @Test
   void shouldReturn400WhenPaymentAmountIsNonNumeric() {
     // given
-    testSupportClient.reset();
-
     RegisterRequest user = TestDataFactory.userWithPrefix("payer");
     String fromAccountId = authClient.register(user)
         .then()

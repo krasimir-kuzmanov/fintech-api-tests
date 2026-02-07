@@ -1,34 +1,22 @@
 package com.example.fintech.api.tests.base;
 
 import com.example.fintech.api.client.AuthClient;
-import com.example.fintech.api.client.TestSupportClient;
 import com.example.fintech.api.config.RestAssuredConfig;
 import com.example.fintech.api.model.request.RegisterRequest;
 import com.example.fintech.api.testdata.TestDataFactory;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.TestInstance;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class BaseTest {
 
   protected final AuthClient authClient = new AuthClient();
-  protected final TestSupportClient testSupportClient = new TestSupportClient();
 
   @BeforeAll
-  static void setup() {
+  void setup() {
     RestAssuredConfig.init();
-  }
-
-  @BeforeEach
-  void resetState() {
-    testSupportClient.reset();
-  }
-
-  protected String registerAndGetAccountId(String usernamePrefix) {
-    RegisteredUser user = registerUser(usernamePrefix);
-
-    return user.accountId();
   }
 
   protected RegisteredUser registerUser(String usernamePrefix) {

@@ -11,6 +11,4 @@ public final class TestEndpoints {
   public static final String TRANSACTION_PAYMENT = "/transaction/payment";
   public static final String TRANSACTION_HISTORY = "/transaction/{accountId}";
 
-  public static final String TEST_RESET = "/test/reset";
-
 }

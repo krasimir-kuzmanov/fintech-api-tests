@@ -1,7 +1,6 @@
 package com.example.fintech.api.tests.account;
 
 import com.example.fintech.api.client.AuthClient;
-import com.example.fintech.api.client.TestSupportClient;
 import com.example.fintech.api.model.request.FundAccountRequest;
 import com.example.fintech.api.model.request.LoginRequest;
 import com.example.fintech.api.model.request.RegisterRequest;
@@ -28,14 +27,11 @@ class AccountNegativeTests extends BaseTest {
   private static final String NON_NUMERIC_AMOUNT = "abc";
   private static final BigDecimal ZERO_AMOUNT = BigDecimal.ZERO;
 
-  private final TestSupportClient testSupportClient = new TestSupportClient();
   private final AuthClient authClient = new AuthClient();
 
   @Test
   void shouldReturn400WhenFundingWithZeroAmount() {
     // given
-    testSupportClient.reset();
-
     RegisterRequest user = TestDataFactory.userWithPrefix("account");
     String accountId = authClient.register(user)
         .then()
@@ -68,8 +64,6 @@ class AccountNegativeTests extends BaseTest {
   @Test
   void shouldReturn400WhenFundingWithNonNumericAmount() {
     // given
-    testSupportClient.reset();
-
     RegisterRequest user = TestDataFactory.userWithPrefix("account");
     String accountId = authClient.register(user)
         .then()
