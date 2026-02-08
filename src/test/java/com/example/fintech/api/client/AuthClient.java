@@ -20,4 +20,10 @@ public class AuthClient extends BaseClient {
         .when()
         .post(TestEndpoints.AUTH_LOGIN);
   }
+
+  public Response logout(String token) {
+    return authRequest(token)
+        .when()
+        .post(TestEndpoints.AUTH_LOGOUT);
+  }
 }
