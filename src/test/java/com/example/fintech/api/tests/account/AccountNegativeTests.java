@@ -25,6 +25,7 @@ import static org.hamcrest.Matchers.equalTo;
 class AccountNegativeTests extends BaseTest {
 
   private static final String NON_NUMERIC_AMOUNT = "abc";
+  private static final String NUMERIC_STRING_AMOUNT = "100.00";
   private static final BigDecimal ZERO_AMOUNT = BigDecimal.ZERO;
 
   private final AuthClient authClient = new AuthClient();
@@ -82,6 +83,36 @@ class AccountNegativeTests extends BaseTest {
         .header(AUTH_HEADER, BEARER_PREFIX + login.token())
         .pathParam("accountId", accountId)
         .body(Map.of("amount", NON_NUMERIC_AMOUNT))
+        .when()
+        .post(TestEndpoints.ACCOUNT_FUND);
+
+    // then
+    response.then()
+        .statusCode(HttpStatus.SC_BAD_REQUEST)
+        .body("error", equalTo(TestConstants.ERROR_CODE_INVALID_AMOUNT));
+  }
+
+  @Test
+  void shouldReturn400WhenFundingWithStringNumericAmount() {
+    // given
+    RegisterRequest user = TestDataFactory.userWithPrefix("account");
+    String accountId = authClient.register(user)
+        .then()
+        .extract()
+        .path("id");
+
+    AuthResponse login = authClient.login(new LoginRequest(user.username(), TestConstants.DEFAULT_PASSWORD))
+        .then()
+        .statusCode(HttpStatus.SC_OK)
+        .extract()
+        .as(AuthResponse.class);
+
+    // when
+    Response response = given()
+        .contentType(ContentType.JSON)
+        .header(AUTH_HEADER, BEARER_PREFIX + login.token())
+        .pathParam("accountId", accountId)
+        .body(Map.of("amount", NUMERIC_STRING_AMOUNT))
         .when()
         .post(TestEndpoints.ACCOUNT_FUND);
 
