@@ -24,11 +24,12 @@ Run a single test class:
 ```
 ## Test Coverage
 - Auth tests cover registration and login flows.
+- Logout tests cover successful logout, token revocation, idempotent logout, and invalid token handling.
 - Account tests cover funding, balance retrieval, and invalid amount handling.
 - Transaction tests cover successful payments, insufficient funds, and history listing.
 - End-to-end tests cover authenticated payment flow and balance consistency.
 - Security tests verify unauthenticated (401) and unauthorized (403) access across account and transaction endpoints.
-- Token validation tests cover invalid tokens and missing `Bearer` prefix handling (401).
+- Token validation tests cover invalid tokens and malformed `Authorization` header handling (401).
 - Negative account and transaction tests cover zero and non-numeric amount validation (400).
 
 ### CI

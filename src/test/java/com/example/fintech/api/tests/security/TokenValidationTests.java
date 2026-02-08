@@ -20,6 +20,8 @@ import static io.restassured.RestAssured.given;
 class TokenValidationTests extends BaseTest {
 
   private static final String INVALID_TOKEN = "invalid-token";
+  private static final String GARBAGE_AUTH_VALUE = "something-not-bearer";
+  private static final String BLANK_BEARER_VALUE = "Bearer   ";
 
   private final AuthClient authClient = new AuthClient();
 
@@ -64,6 +66,50 @@ class TokenValidationTests extends BaseTest {
     Response response = given()
         .contentType(ContentType.JSON)
         .header(AUTH_HEADER, login.token())
+        .pathParam("accountId", accountId)
+        .when()
+        .get(TestEndpoints.ACCOUNT_BALANCE);
+
+    // then
+    response.then()
+        .statusCode(HttpStatus.SC_UNAUTHORIZED);
+  }
+
+  @Test
+  void shouldReturn401WhenAuthorizationHeaderIsGarbage() {
+    // given
+    RegisterRequest user = TestDataFactory.userWithPrefix("token");
+    String accountId = authClient.register(user)
+        .then()
+        .extract()
+        .path("id");
+
+    // when
+    Response response = given()
+        .contentType(ContentType.JSON)
+        .header(AUTH_HEADER, GARBAGE_AUTH_VALUE)
+        .pathParam("accountId", accountId)
+        .when()
+        .get(TestEndpoints.ACCOUNT_BALANCE);
+
+    // then
+    response.then()
+        .statusCode(HttpStatus.SC_UNAUTHORIZED);
+  }
+
+  @Test
+  void shouldReturn401WhenBearerTokenValueIsBlank() {
+    // given
+    RegisterRequest user = TestDataFactory.userWithPrefix("token");
+    String accountId = authClient.register(user)
+        .then()
+        .extract()
+        .path("id");
+
+    // when
+    Response response = given()
+        .contentType(ContentType.JSON)
+        .header(AUTH_HEADER, BLANK_BEARER_VALUE)
         .pathParam("accountId", accountId)
         .when()
         .get(TestEndpoints.ACCOUNT_BALANCE);
