@@ -12,4 +12,8 @@ public final class TestEndpoints {
   public static final String TRANSACTION_PAYMENT = "/transaction/payment";
   public static final String TRANSACTION_HISTORY = "/transaction/{accountId}";
 
+  private TestEndpoints() {
+    // utility class
+  }
+
 }
