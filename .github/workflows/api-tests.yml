@@ -1,5 +1,9 @@
 name: API Tests
 
+concurrency:
+  group: api-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 on:
   push:
     branches: [ main ]
@@ -33,22 +37,37 @@ jobs:
       - name: Start backend
         run: |
           cd fintech-backend
-          ./gradlew bootRun &
+          ./gradlew bootRun > backend.log 2>&1 &
+          echo $! > backend.pid
 
-      - name: Wait for backend
+      - name: Wait for backend health
         run: |
-          until curl -s http://localhost:8080/actuator/health | grep UP; do
+          until curl -s http://localhost:8080/actuator/health | grep -q UP; do
             echo "Waiting for backend..."
             sleep 2
           done
 
-      - name: Run API tests
-        run: |
-          ./gradlew clean test
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
 
-      - name: Upload test report
+      - name: Run API tests
+        run: ./gradlew clean test
+
+      - name: Upload API test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: api-test-report
           path: build/reports/tests/test
+
+      - name: Upload backend log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-log
+          path: fintech-backend/backend.log
+
+      - name: Stop backend
+        if: always()
+        run: |
+          if [ -f fintech-backend/backend.pid ]; then kill $(cat fintech-backend/backend.pid) || true; fi
