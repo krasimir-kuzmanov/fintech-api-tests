@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static com.example.fintech.api.testdata.TestConstants.DEFAULT_PASSWORD;
 import static com.example.fintech.api.testdata.TestConstants.ERROR_CODE_INVALID_CREDENTIALS;
+import static com.example.fintech.api.testdata.TestConstants.ERROR_CODE_INVALID_REQUEST;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -48,6 +49,59 @@ class LoginTests extends BaseTest {
     Response response = authClient.login(loginRequest);
 
     // then
+    response.then()
+        .statusCode(HttpStatus.SC_UNAUTHORIZED)
+        .body("error", equalTo(ERROR_CODE_INVALID_CREDENTIALS));
+  }
+
+  @Test
+  void shouldRejectLoginWhenUsernameIsBlank() {
+    Response response = authClient.login(new LoginRequest("   ", DEFAULT_PASSWORD));
+
+    response.then()
+        .statusCode(HttpStatus.SC_BAD_REQUEST)
+        .body("error", equalTo(ERROR_CODE_INVALID_REQUEST));
+  }
+
+  @Test
+  void shouldRejectLoginWhenPasswordIsBlank() {
+    RegisterRequest registerRequest = TestDataFactory.userWithPrefix("blank_password");
+    authClient.register(registerRequest);
+
+    Response response = authClient.login(new LoginRequest(registerRequest.username(), "   "));
+
+    response.then()
+        .statusCode(HttpStatus.SC_BAD_REQUEST)
+        .body("error", equalTo(ERROR_CODE_INVALID_REQUEST));
+  }
+
+  @Test
+  void shouldRejectLoginWhenUsernameIsNull() {
+    Response response = authClient.login(new LoginRequest(null, DEFAULT_PASSWORD));
+
+    response.then()
+        .statusCode(HttpStatus.SC_BAD_REQUEST)
+        .body("error", equalTo(ERROR_CODE_INVALID_REQUEST));
+  }
+
+  @Test
+  void shouldRejectLoginWhenPasswordIsNull() {
+    RegisterRequest registerRequest = TestDataFactory.userWithPrefix("null_password");
+    authClient.register(registerRequest);
+
+    Response response = authClient.login(new LoginRequest(registerRequest.username(), null));
+
+    response.then()
+        .statusCode(HttpStatus.SC_BAD_REQUEST)
+        .body("error", equalTo(ERROR_CODE_INVALID_REQUEST));
+  }
+
+  @Test
+  void shouldRejectLoginWithUnknownUsernameAndNonEmptyPassword() {
+    LoginRequest loginRequest = new LoginRequest("missing_user", DEFAULT_PASSWORD);
+
+    Response response = authClient.login(loginRequest);
+
     response.then()
         .statusCode(HttpStatus.SC_UNAUTHORIZED)
         .body("error", equalTo(ERROR_CODE_INVALID_CREDENTIALS));
