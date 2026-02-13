@@ -49,7 +49,7 @@ class LoginTests extends BaseTest {
 
     // then
     response.then()
-        .statusCode(HttpStatus.SC_BAD_REQUEST)
+        .statusCode(HttpStatus.SC_UNAUTHORIZED)
         .body("error", equalTo(ERROR_CODE_INVALID_CREDENTIALS));
   }
 }
