@@ -4,6 +4,13 @@
 
 API test suite for fintech services using JUnit 5 and RestAssured.
 
+## Tech Stack
+- Java 21 (Gradle toolchain)
+- Gradle Wrapper
+- JUnit 5
+- RestAssured
+- Jackson (JSON serialization)
+
 ## Requirements
 - JDK 21 installed (tests compile/run with Java 21; toolchain configured in `build.gradle`)
 - SDKMAN available (project includes `.sdkmanrc`)
@@ -22,7 +29,8 @@ Run a single test class:
 ```bash
 ./gradlew test --tests "com.example.fintech.SomeTest"
 ```
-## Test Coverage
+
+## What the Suite Covers
 - Auth tests cover registration and login flows.
 - Logout tests cover successful logout, token revocation, idempotent logout, and invalid token handling.
 - Account tests cover funding, balance retrieval, and invalid amount handling.
@@ -32,12 +40,13 @@ Run a single test class:
 - Token validation tests cover invalid tokens and malformed `Authorization` header handling (401).
 - Negative account and transaction tests cover zero and non-numeric amount validation (400).
 
-### CI
-API tests are executed automatically on every push and pull request using GitHub Actions.
+## CI
+GitHub Actions workflow:
+- `.github/workflows/api-tests.yml`
 
-## Parallel Test Execution
-API tests are designed to run in parallel. Tests rely on randomized data and avoid shared state assumptions to prevent inter-test coupling.
+It runs on push to `main`, pull requests, and manual dispatch.
 
 ## Notes
+- API tests are designed to run in parallel; tests rely on randomized data and avoid shared state assumptions to prevent inter-test coupling.
 - Test logging is configured to show passed/skipped/failed with full stack traces.
 - The Gradle wrapper is pinned to version 9.0.0.
