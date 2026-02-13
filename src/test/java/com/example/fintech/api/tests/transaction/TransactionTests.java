@@ -2,10 +2,8 @@ package com.example.fintech.api.tests.transaction;
 
 import com.example.fintech.api.client.AccountClient;
 import com.example.fintech.api.client.TransactionClient;
-import com.example.fintech.api.model.request.LoginRequest;
 import com.example.fintech.api.model.request.FundAccountRequest;
 import com.example.fintech.api.model.request.PaymentRequest;
-import com.example.fintech.api.model.response.AuthResponse;
 import com.example.fintech.api.model.response.TransactionResponse;
 import com.example.fintech.api.tests.base.BaseTest;
 import org.apache.http.HttpStatus;
@@ -15,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static com.example.fintech.api.testdata.TestConstants.ERROR_CODE_INSUFFICIENT_FUNDS;
-import static com.example.fintech.api.testdata.TestConstants.DEFAULT_PASSWORD;
 import static com.example.fintech.api.testdata.TestConstants.TRANSACTION_STATUS_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -116,16 +113,6 @@ class TransactionTests extends BaseTest {
     accountClient.fund(accountId, new FundAccountRequest(TRANSACTION_INITIAL_BALANCE), token)
         .then()
         .statusCode(HttpStatus.SC_OK);
-  }
-
-  private String loginAndGetToken(String username) {
-    AuthResponse response = authClient.login(new LoginRequest(username, DEFAULT_PASSWORD))
-        .then()
-        .statusCode(HttpStatus.SC_OK)
-        .extract()
-        .as(AuthResponse.class);
-
-    return response.token();
   }
 
   private record AccountPair(String fromUsername, String fromAccountId, String toAccountId) {
